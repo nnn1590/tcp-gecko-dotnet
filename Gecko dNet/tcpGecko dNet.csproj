@@ -47,12 +47,13 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <PackageReference Include="ILMerge" Version="3.0.29" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddressTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="AddressTextBox.designer.cs">
+    <Compile Include="AddressTextBox.Designer.cs">
       <DependentUpon>AddressTextBox.cs</DependentUpon>
     </Compile>
     <Compile Include="bplist.cs">
@@ -232,8 +233,11 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Release move "$(TargetPath)" "$(TargetDir)GDNPreMerge.exe"
+    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT' ">if $(ConfigurationName) == Release move "$(TargetPath)" "$(TargetDir)GDNPreMerge.exe"
 
-if $(ConfigurationName) == Release "$(ProjectDir)ilmerge" /target:winexe /out:"$(TargetPath)" "$(TargetDir)GDNPreMerge.exe" "$(ProjectDir)Ionic.Zip.Reduced.dll"</PostBuildEvent>
+if $(ConfigurationName) == Release "$(ProjectDir)ILMerge.exe" /target:winexe /out:"$(TargetPath)" "$(TargetDir)GDNPreMerge.exe" "$(ProjectDir)Ionic.Zip.Reduced.dll"</PostBuildEvent>
+    <PostBuildEvent Condition="'$(OS)' != 'Windows_NT' ">if [ "$(ConfigurationName)" == "Release" ]; then mv "$(TargetPath)" "$(TargetDir)GDNPreMerge.exe"; fi
+# $(ILMergeConsolePath) is not working...
+if  [ "$(ConfigurationName)" == "Release" ]; then "$(ProjectDir)ILMerge.exe" /target:winexe /out:"$(TargetPath)" "$(TargetDir)GDNPreMerge.exe" "$(ProjectDir)Ionic.Zip.Reduced.dll"; fi</PostBuildEvent>
   </PropertyGroup>
 </Project>
